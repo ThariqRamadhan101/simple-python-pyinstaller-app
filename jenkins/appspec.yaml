@@ -1,0 +1,5 @@
+version: 0.0
+os: linux|windows
+files:
+  - source: /sources/add2vals.py
+    destination: /
