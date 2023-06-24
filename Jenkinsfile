@@ -14,27 +14,25 @@ node {
         always {
           junit 'test-reports/results.xml'
         }
-        input message: 'Lanjutkan ke tahap Deploy? (Click "Proceed" to continue)'
       }
     }
   }
-  stage('Deploy') {
-    withEnv([VOLUME = '$(pwd)/sources:/src',
-      IMAGE = 'cdrx/pyinstaller-linux:python2'
-    ])
-    try {
-      dir(path: env.BUILD_ID) {
-        unstash(name: 'compiled-results')
-        sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
-
-      }
-    } catch (Exception e) {
-      echo 'Error: ' + e.toString()
-    } finally {
-      success {
-        archiveArtifacts 'dist/add2vals'
-        sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
-        sleep 60
+  withEnv([VOLUME = '$(pwd)/sources:/src',
+    IMAGE = 'cdrx/pyinstaller-linux:python2'
+  ]) {
+    stage('Deploy') {
+      docker.image('cdrx/pyinstaller-linux:python2').inside {
+        try {
+          sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
+        } catch (Exception e) {
+          echo 'Error: ' + e.toString()
+        } finally {
+          success {
+            archiveArtifacts 'dist/add2vals'
+            sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
+            sleep 60
+          }
+        }
       }
     }
   }
