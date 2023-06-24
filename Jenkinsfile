@@ -21,7 +21,7 @@ node {
     IMAGE = 'cdrx/pyinstaller-linux:python2'
   ]) {
     stage('Deploy') {
-      docker.image('cdrx/pyinstaller-linux:python2').inside {
+      docker.image('cdrx/pyinstaller-linux:python2').inside("--entrypoint=''")  {
         try {
           sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
         } catch (Exception e) {
