@@ -17,11 +17,11 @@ node {
       }
     }
   }
-  withEnv([VOLUME = '$(pwd)/sources:/src',
-    IMAGE = 'cdrx/pyinstaller-linux:python2'
+  withEnv(['VOLUME = $(pwd)/sources:/src',
+    'IMAGE = cdrx/pyinstaller-linux:python2'
   ]) {
     stage('Deploy') {
-      docker.image('cdrx/pyinstaller-linux:python2').inside("--entrypoint=''")  {
+      docker.image('cdrx/pyinstaller-linux:python2') {
         try {
           sh "docker run --rm -v ${VOLUME} ${IMAGE} 'pyinstaller -F add2vals.py'"
         } catch (Exception e) {
